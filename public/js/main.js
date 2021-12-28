@@ -31,10 +31,6 @@ personalCodeCopyButton.addEventListener("click", () => {
 /////register event listner for connection buttons
 
 const personalCodeVideoButton = document.getElementById('personal_code_video_button');
-
-
-
-
 //----------------------sending offer to server... berfore that checking if caller wants to reject the call---------------
 personalCodeVideoButton.addEventListener("click", () => {
     console.log('video button clicked');

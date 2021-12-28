@@ -9,41 +9,46 @@ let connectedUserDetails;
 
 let peerConnection;
 
-const configuration = {
-    iceServers: [
-        {
-          urls: ["stun:stun.l.google.com:19302"]
-        }
-      ]
-};
+
 
 const defaultConstraints = {
     audio: true,
     video: true
 };
 
+const configuration = {
+    iceServers: [
+        {
+          urls: 'stun:stun.l.google.com:13902',
+        }
+      ]
+};
 export const getLocalPreview = () => {
     navigator.mediaDevices.getUserMedia(defaultConstraints)
     .then((stream) => {
         ui.updateLocalVideo(stream);
         store.setLocalStream(stream);
-    })
-    .catch((err) => {
-        console.log('error occured whent trying to access camera');
+    }).catch((err) => {
+        console.log('error occured when trying to access camera');
         console.log(err);
     });
 };
 
-const createPeerConnection = () =>{
+const createPeerConnection = () => {
     peerConnection = new RTCPeerConnection(configuration);   
 
     peerConnection.onicecandidate = (event) => {
         console.log('getting ice candidate from stun server');
-        if(event.candidate) {
+        if (event.candidate) {
             // send our ice candidates to other peer
+            wss.sendDataUsingWebRTCSignallling({
+                connectedUserSocketId: connectedUserDetails.socketId,
+                type: constants.webRTCSignalling.ICE_CANDIDATE,
+                candidate: event.candidate,
+            });
 
         }
-    }
+    };
 
     peerConnection.onconnectionstatechange = (event) => {
         if(peerConnection.connectionState === 'connected') {
@@ -163,7 +168,7 @@ export const handlePreOfferAnswer = (data) => {
         ui.showInfoDialog(preOfferAnswer);
     }
 
-    if(preOfferAnswer === constants.preOfferAnswer.CALL_ACCEPTED){
+    if(preOfferAnswer === constants.preOfferAnswer.CALL_ACCEPTED) {
         //show dailog that calle accepted
         ui.showCallElements(connectedUserDetails.callType);
         createPeerConnection();
@@ -171,7 +176,7 @@ export const handlePreOfferAnswer = (data) => {
     }
 };
 
-const sendWebRTCOffer = async() =>{
+const sendWebRTCOffer = async () => {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
     wss.sendDataUsingWebRTCSignallling({
@@ -181,7 +186,30 @@ const sendWebRTCOffer = async() =>{
     });
 };
 
-export const handleWebRTCOffer = (data) => {
-    console.log('webRTC offer came');
-    console.log(data);
-}
+export const handleWebRTCOffer = async (data) => {
+    await peerConnection.setRemoteDescription(data.offer);
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    wss.sendDataUsingWebRTCSignallling({
+        connectedUserSocketId: connectedUserDetails.socketId,
+        type:constants.webRTCSignalling.ANSWER,
+        answer: answer,
+    });
+};
+
+export const handleWebRTCAnswer  = async (data) => {
+    console.log("handling webRtc Answer");
+    await peerConnection.setRemoteDescription(data.answer);
+};
+
+export const handleWebRTCCandidate = async (data) => {
+    console.log('handling incoming webRTC candidate');
+    try{
+        await peerConnection.addIceCandidate(data.candidate);
+    } catch (err) {
+        console.error(
+            "error occured when trying to add received ice candidate",
+            err
+        );
+    }
+};
