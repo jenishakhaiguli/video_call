@@ -11,6 +11,7 @@ export const preOfferAnswer = {
     CALL_UNAVAILABLE: 'CALL_UNAVAILABLE'
 };
 
+//-------------3. sending webrrct offer------------------ constants that we need
 export const webRTCSignalling = {
     OFFER: 'OFFER',
     ANSWER: 'ANSWER',

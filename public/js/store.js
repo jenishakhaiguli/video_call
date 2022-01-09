@@ -3,6 +3,8 @@ let state = {
     socketId: null,
     localStream: null,
     remoteStream: null,
+    screenSharingStream: null,
+    screenSharingActive: false
 
 };
 
@@ -12,6 +14,7 @@ export const setSocketId = (socketId) => {
         ...state,
         socketId: socketId,
     };
+    console.log("state");
     console.log(state);
 };
 
@@ -22,6 +25,21 @@ export const setLocalStream = (stream) => {
         localStream: stream
     };
     //console.log(state);
+};
+
+
+export const setScreenSharingActive = (screenSharingActive) => {
+    state = {
+        ...state,
+        screenSharingActive
+    };
+};
+
+export const setScreenSharingStream = (stream) => {
+    state = {
+        ...state,
+        screenSharingStream: stream
+    };
 };
 
 export const setRemoteStream = (stream) => {
@@ -35,4 +53,4 @@ export const setRemoteStream = (stream) => {
 
 export const getState = () => {
     return state;
-}
+};

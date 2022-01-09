@@ -27,7 +27,7 @@ export const registerSocketEvents = (socket) => {
      socket.on('pre-offer-answer', (data) => {
          webRTCHandler.handlePreOfferAnswer(data);
      })
-
+//-------------3. sending webrrct offer------------------listener
      socket.on('webRTC-signalling', (data) => {
         switch (data.type) {
             case constants.webRTCSignalling.OFFER:
@@ -55,6 +55,7 @@ export const sendPreOfferAnswer = (data) => {
     socketIO.emit('pre-offer-answer', data);
 };
 
+//-------------3. sending webrrct offer------------------emitting event to server
 export const sendDataUsingWebRTCSignallling = (data) => {
     socketIO.emit('webRTC-signalling', data);
 };
