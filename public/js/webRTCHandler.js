@@ -66,6 +66,8 @@ const createPeerConnection = () => {
         //candidate:2087201215 1 udp 2122260223 192.168.1.14 61878 typ host generation 0 ufrag 0/qe network-id 1 network-cost 10"
         if (event.candidate) {
             // send our ice candidates to other peer
+            console.log('1');
+            console.log("connectedUserDetails: " + connectedUserDetails.socketId);
             wss.sendDataUsingWebRTCSignallling({
                 ////////
                 connectedUserSocketId: connectedUserDetails.socketId,
@@ -134,7 +136,7 @@ export const handlePreOffer = (data) => {
     console.log(data);
 
     const {callType, callerSocketId} = data;
-
+//hjfkhfhakf heuifeu fhe fhe  fhh
     connectedUserDetails = {
         socketId: callerSocketId,
         callType,
@@ -151,7 +153,9 @@ const acceptCallHandler = () => {
     console.log('call accepted');
 //-------------3. sending webrrc offer------------------
 //creating peer connection after accepting call
+    console.log('1');
     createPeerConnection();
+    
     sendPreOfferAnswer(constants.preOfferAnswer.CALL_ACCEPTED);
     ui.showCallElements(connectedUserDetails.callType);
 };
@@ -205,7 +209,7 @@ export const handlePreOfferAnswer = (data) => {
         ui.showCallElements(connectedUserDetails.callType);
         //3. creating peer connection after call has been accepted(sing the function created earlier)
         createPeerConnection();
-        //3.
+        //3.caller
         sendWebRTCOffer();
     }
 };
@@ -222,7 +226,7 @@ const sendWebRTCOffer = async () => {
     });
 };
 
-//----------------- 5. handling webrtc offer preparing webrtc answer and handling it at caller side-----
+//----------------- 5. handling webrtc offer preparing webrtc answer and handling it at callecalleer side-----
 export const handleWebRTCOffer = async (data) => {
     await peerConnection.setRemoteDescription(data.offer);
     const answer = await peerConnection.createAnswer();

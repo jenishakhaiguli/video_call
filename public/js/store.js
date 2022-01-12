@@ -1,12 +1,16 @@
+//const NodeRSA = require('node-rsa');
+//import NodeRSA from 'node-rsa';
+
+
 let state = {
     //we dont know the intial state
     socketId: null,
     localStream: null,
     remoteStream: null,
     screenSharingStream: null,
-    screenSharingActive: false
-
+    screenSharingActive: false,
 };
+
 
 export const setSocketId = (socketId) => {
     state = {

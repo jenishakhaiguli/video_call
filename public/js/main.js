@@ -17,14 +17,18 @@ webRTCHandler.getLocalPreview();
 
 //register event listner for personal code copy button
 const personalCodeCopyButton = document.getElementById('personal_code_copy_button');
+
+
 personalCodeCopyButton.addEventListener("click", () => {
-    
-    const personalCode = store.getState().socketId;
-    
     //The Clipboard interface's writeText() property writes the specified text string to the system clipboard.
     //copy the personal code
+    const personalCode1 = store.getState().socketId;
+    /////////////////////////
+    wss.encryptPersonalCode(personalCode1);
+    /////////////////////////
+    console.log('encryptedData: ' + wss.encryptedData);
     navigator.clipboard;
-    navigator.clipboard.writeText(personalCode);
+    navigator.clipboard.writeText(wss.encryptedData);
 });
 
 
@@ -38,8 +42,11 @@ personalCodeVideoButton.addEventListener("click", () => {
     const calleePersonalCode = document.getElementById('personal_code_input').value;
     const callType = constants.callType.VIDEO_PERSONAL_CODE;
     //calleePersonalCode is code of the person to whom we want to call
-
-    webRTCHandler.sendPreOffer(callType ,calleePersonalCode);
+    /////////////////////////
+    wss.decryptPersonalCode(calleePersonalCode);
+    /////////////////////////
+    
+    webRTCHandler.sendPreOffer(callType ,wss.decryptedData);
 });
 
 //event listeners for video call buttons

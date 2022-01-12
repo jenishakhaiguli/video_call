@@ -1,26 +1,24 @@
+const NodeRSA = require('node-rsa');
+const key = new NodeRSA({b: 512});
+
 const express = require('express');
+//module
 const http = require('http');
 
 //for 3000 or heroku
+//environment variable
 const PORT = process.env.PORT || 3000;
 
 const app = express();
-
 
 //creating server and passing application
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-
-
-
 //middleware
 app.use(express.static('public'));
 
 
-
-
-  
 app.get('/', (req,res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
@@ -36,6 +34,21 @@ io.on('connect', (socket) => {
     //if client connects to the server then the id will be printed
     console.log(connectedPeers);
 
+    socket.on('encrypt_personal_code', (personalCode) => {
+       
+        const encryptedString = key.encrypt(personalCode, 'base64');
+        console.log('encrypted: ', encryptedString);
+        
+        io.to(personalCode).emit('encrypt_personal_code', encryptedString);
+          
+    });
+
+    socket.on('decrypt_personal_code', (personalCode) => {
+        const decryptedCode = key.decrypt(personalCode, 'utf8');
+        console.log('decrypted: ', decryptedCode); 
+        io.to(personalCode).emit('decrypt_personal_code', decryptedCode);
+          
+    });
 
     socket.on('pre-offer', (data) => {
         console.log('pre-offer-came-on-server-from-caller');
@@ -50,11 +63,12 @@ io.on('connect', (socket) => {
 
         console.log(`calling: ${connectedPeer}`);
         if (connectedPeers){
+            /////////////////////////////////////////////
             const data ={
                 callerSocketId: socket.id,
                 callType,
             };
-            console.log('caller connected to server ... trying to connect callee/receiver')
+            console.log('caller connected to server ... trying to connect callee/receiver',data)
             io.to(calleePersonalCode).emit('pre-offer', data);
         }
     });
@@ -71,13 +85,12 @@ io.on('connect', (socket) => {
             io.to(data.callerSocketId).emit('pre-offer-answer', data);
         }
     });
-
+//-------------3. sending webrrct offer------------------  
     socket.on('webRTC-signalling', (data) => {
         const {connectedUserSocketId} = data;
+        console.log("connectedUserSocketId: " + connectedUserSocketId);
 
-        const connectedPeer = connectedPeers.find(
-            (peerSocketId) => peerSocketId === connectedUserSocketId
-        );
+        const connectedPeer = connectedPeers.find((peerSocketId) => peerSocketId === connectedUserSocketId);
 
         if(connectedPeer) {
             io.to(connectedUserSocketId).emit('webRTC-signalling',data);
@@ -97,8 +110,6 @@ io.on('connect', (socket) => {
         console.log(connectedPeers);
     });
 });
-
-
 
 
 server.listen(PORT, () => {
