@@ -3,6 +3,8 @@ import * as wss from "./wss.js";
 import * as webRTCHandler from "./webRTCHandler.js";
 import * as constants from './constants.js';
 import * as ui from "./ui.js";
+import { decryptedData, encryptedData } from './wss.js';
+
 
 //initialization of socketIO connection
 const socket = io('/'); //connection from the client side with our socket
@@ -26,9 +28,10 @@ personalCodeCopyButton.addEventListener("click", () => {
     /////////////////////////
     wss.encryptPersonalCode(personalCode1);
     /////////////////////////
-    console.log('encryptedData: ' + wss.encryptedData);
+    console.log('encryptedData: ' + encryptedData);
+
     navigator.clipboard;
-    navigator.clipboard.writeText(wss.encryptedData);
+    navigator.clipboard.writeText(encryptedData);
 });
 
 
@@ -45,8 +48,8 @@ personalCodeVideoButton.addEventListener("click", () => {
     /////////////////////////
     wss.decryptPersonalCode(calleePersonalCode);
     /////////////////////////
-    
-    webRTCHandler.sendPreOffer(callType ,wss.decryptedData);
+    console.log('decryptedData: ' + decryptedData);
+    webRTCHandler.sendPreOffer(callType ,decryptedData);
 });
 
 //event listeners for video call buttons

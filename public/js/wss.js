@@ -4,17 +4,16 @@ import * as ui from './ui.js';
 import * as webRTCHandler from './webRTCHandler.js';
 import * as constants from './constants.js';
 
-///
-export var encryptedData;
-export var decryptedData;
-///
+var encryptedData;
+var decryptedData;
+
 let socketIO = null;
 
 export const registerSocketEvents = (socket) => {
 
     socketIO = socket;
 
-   // is called directly before the connection has been opened   (callbacks)
+    // is called directly before the connection has been opened   (callbacks)
     socket.on('connect', () => {
         console.log('client sucessfully connected to socket.io server');
         console.log(socket.id);
@@ -24,15 +23,15 @@ export const registerSocketEvents = (socket) => {
 
     //////////////////////
     socket.on('encrypt_personal_code', (data) => {
-        encryptedData = data;
-        
+        encryptedData =  data;
+       
         console.log('encryptedData: ' + encryptedData);
     });
 
     socket.on('decrypt_personal_code', (data) => {
         decryptedData = data;
-        webRTCHandler.sendDecryptedData(data);
-        console.log('encryptedData: ' + decryptedData);
+        
+        console.log('decryptedData: ' + decryptedData);
     })
 
     //////////////////////
@@ -90,5 +89,11 @@ export const encryptPersonalCode = (data) => {
 export const decryptPersonalCode = (data) => {
     socketIO.emit('decrypt_personal_code', data);
 };
+
+
+///
+export { encryptedData };
+export { decryptedData }
+///
 
 /////////////////////////
