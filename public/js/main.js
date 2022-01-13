@@ -29,6 +29,7 @@ personalCodeCopyButton.addEventListener("click", () => {
     wss.encryptPersonalCode(personalCode1);
     /////////////////////////
     console.log('encryptedData: ' + encryptedData);
+    
 
     navigator.clipboard;
     navigator.clipboard.writeText(encryptedData);
